@@ -26,7 +26,7 @@
                                 </select>
                             </div>
                             <div class="col-md-6">
-                                <button type="button" style="float:right"
+                                <button type="button"  @click="clearFilters()" style="float:right"
                                         class="btn btn-outline-dark">Reset
                                 </button>
                             </div>
@@ -46,26 +46,17 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr v-for="customer in customers">
-                                <td>{{ customer.name }}</td>
-                                <td>{{ customer.country }}</td>
-                                <td>{{ customer.phone_state ? ("OK") : ("NOK") }}</td>
-                                <td>{{ customer.country_code_with_plus }}</td>
-                                <td>{{ customer.phone_number }}</td>
+                            <tr v-for="client in clients">
+                                <td>{{ client.name }}</td>
+                                <td>{{ client.country }}</td>
+                                <td>{{ client.phone_state ? ("OK") : ("NOK") }}</td>
+                                <td>{{ client.country_code_with_plus }}</td>
+                                <td>{{ client.phone_number }}</td>
 
                             </tr>
                             </tbody>
                         </table>
-                        <nav aria-label="Page navigation example">
-                            <ul class="pagination justify-content-end">
-                                <li class="page-item disabled">
-                                    <a class="page-link" href="#" tabindex="-1">Previous</a>
-                                </li>
-                                <li class="page-item">
-                                    <a class="page-link" href="#">Next</a>
-                                </li>
-                            </ul>
-                        </nav>
+                        <pagination :data="clients" @pagination-change-page="getClients"></pagination>
                     </div>
                 </div>
             </div>
@@ -77,8 +68,32 @@
 export default {
     data() {
         return {
+            clients: [],
+            filters: {},
+            phoneState: "",
+            country: "",
             'isLoading': true,
         };
     },
+
+    methods: {
+        clearFilters() {
+            this.phoneState = "";
+            this.country = "";
+            this.filters = {};
+            this.getCustomersByFilter()
+        },
+        async getClients() {
+            try {
+                this.clients = (await axios.get(
+                '/api/clients')).data.data;
+            } catch (err) {
+                this.clients = null;
+            }
+        },
+    },
+    created() {
+    this.getClients()
+  }
 }
 </script>

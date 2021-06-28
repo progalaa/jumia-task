@@ -8,7 +8,9 @@ require('./bootstrap');
 
 import Index from "./components/Index";
 
+
 window.Vue = require('vue').default;
+Vue.component('pagination', require('laravel-vue-pagination'));
 
 /**
  * The following block of code may be used to automatically register your
