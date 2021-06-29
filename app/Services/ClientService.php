@@ -1,7 +1,11 @@
 <?php
 
 namespace App\Services;
+use App\Contracts\Filter;
+use App\Filters\Country;
+use App\Filters\Phone;
 use App\Models\Client;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
 class ClientService
@@ -22,22 +26,28 @@ class ClientService
     {
         $clients = $this->allClients();
 
-//        if (!$filters) {
-//            return $clients;
-//        }
-//
-//        foreach ($filters as $filter => $value) {
-//            $filter = ucfirst(Str::camel($filter));
-//
-////            if (!in_array($filter, CustomerFilters::FILTERS)) {
-////                continue;
-////            }
-//
-////            $filterPath = CustomerFilters::getFilterClass($filter);
-////            $filterClass = new $filterPath;
-////            $customers = $this->applyFilter($filterClass, $customers, $value);
-//        }
+        if (!$filters) {
+            return $clients;
+        }
+
+        foreach ($filters as $filter => $value) {
+            $filter = ucfirst(Str::camel($filter));
+
+            if (!in_array($filter, ['Country', 'PhoneState'])) {
+                continue;
+            }
+
+            $filterClass = ($filter == 'Country') ? Country::class : Phone::class;
+
+            $clients = $this->applyFilter(new $filterClass, $clients, $value);
+        }
 
         return $clients;
     }
+
+    private function applyFilter(Filter $filter, Collection $collection, $value): Collection
+    {
+        return $filter->apply($collection, $value);
+    }
+
 }

@@ -1923,30 +1923,17 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
     return {
       clients: [],
       filters: {},
-      phoneState: "",
-      country: "",
+      phoneState: null,
+      country: null,
       'isLoading': true
     };
   },
   methods: {
-    clearFilters: function clearFilters() {
-      this.phoneState = "";
-      this.country = "";
-      this.filters = {};
-      this.getCustomersByFilter();
-    },
     getClients: function getClients() {
       var _this = this;
 
@@ -1956,25 +1943,36 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
             switch (_context.prev = _context.next) {
               case 0:
                 _context.prev = 0;
-                _context.next = 3;
-                return axios.get('/api/clients');
 
-              case 3:
+                if (_this.phoneState) {
+                  _this.filters.PhoneState = _this.phoneState;
+                }
+
+                if (_this.country) {
+                  _this.filters.Country = _this.country;
+                }
+
+                _context.next = 5;
+                return axios.get('/api/clients', {
+                  params: _this.filters
+                });
+
+              case 5:
                 _this.clients = _context.sent.data.data;
-                _context.next = 9;
+                _context.next = 11;
                 break;
 
-              case 6:
-                _context.prev = 6;
+              case 8:
+                _context.prev = 8;
                 _context.t0 = _context["catch"](0);
                 _this.clients = null;
 
-              case 9:
+              case 11:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee, null, [[0, 6]]);
+        }, _callee, null, [[0, 8]]);
       }))();
     }
   },
@@ -38922,19 +38920,22 @@ var render = function() {
                     ],
                     staticClass: "custom-select",
                     on: {
-                      change: function($event) {
-                        var $$selectedVal = Array.prototype.filter
-                          .call($event.target.options, function(o) {
-                            return o.selected
-                          })
-                          .map(function(o) {
-                            var val = "_value" in o ? o._value : o.value
-                            return val
-                          })
-                        _vm.country = $event.target.multiple
-                          ? $$selectedVal
-                          : $$selectedVal[0]
-                      }
+                      change: [
+                        function($event) {
+                          var $$selectedVal = Array.prototype.filter
+                            .call($event.target.options, function(o) {
+                              return o.selected
+                            })
+                            .map(function(o) {
+                              var val = "_value" in o ? o._value : o.value
+                              return val
+                            })
+                          _vm.country = $event.target.multiple
+                            ? $$selectedVal
+                            : $$selectedVal[0]
+                        },
+                        _vm.getClients
+                      ]
                     }
                   },
                   [
@@ -38979,19 +38980,22 @@ var render = function() {
                     ],
                     staticClass: "custom-select",
                     on: {
-                      change: function($event) {
-                        var $$selectedVal = Array.prototype.filter
-                          .call($event.target.options, function(o) {
-                            return o.selected
-                          })
-                          .map(function(o) {
-                            var val = "_value" in o ? o._value : o.value
-                            return val
-                          })
-                        _vm.phoneState = $event.target.multiple
-                          ? $$selectedVal
-                          : $$selectedVal[0]
-                      }
+                      change: [
+                        function($event) {
+                          var $$selectedVal = Array.prototype.filter
+                            .call($event.target.options, function(o) {
+                              return o.selected
+                            })
+                            .map(function(o) {
+                              var val = "_value" in o ? o._value : o.value
+                              return val
+                            })
+                          _vm.phoneState = $event.target.multiple
+                            ? $$selectedVal
+                            : $$selectedVal[0]
+                        },
+                        _vm.getClients
+                      ]
                     }
                   },
                   [
@@ -39008,62 +39012,35 @@ var render = function() {
                     ])
                   ]
                 )
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "col-md-6" }, [
-                _c(
-                  "button",
-                  {
-                    staticClass: "btn btn-outline-dark",
-                    staticStyle: { float: "right" },
-                    attrs: { type: "button" },
-                    on: {
-                      click: function($event) {
-                        return _vm.clearFilters()
-                      }
-                    }
-                  },
-                  [_vm._v("Reset\n                            ")]
-                )
               ])
             ])
           ]),
           _vm._v(" "),
-          _c(
-            "div",
-            { staticClass: "card-body" },
-            [
-              _c("table", { staticClass: "table" }, [
-                _vm._m(0),
-                _vm._v(" "),
-                _c(
-                  "tbody",
-                  _vm._l(_vm.clients, function(client) {
-                    return _c("tr", [
-                      _c("td", [_vm._v(_vm._s(client.name))]),
-                      _vm._v(" "),
-                      _c("td", [_vm._v(_vm._s(client.country))]),
-                      _vm._v(" "),
-                      _c("td", [
-                        _vm._v(_vm._s(client.phone_state ? "OK" : "NOK"))
-                      ]),
-                      _vm._v(" "),
-                      _c("td", [_vm._v(_vm._s(client.country_code_with_plus))]),
-                      _vm._v(" "),
-                      _c("td", [_vm._v(_vm._s(client.phone_number))])
-                    ])
-                  }),
-                  0
-                )
-              ]),
+          _c("div", { staticClass: "card-body" }, [
+            _c("table", { staticClass: "table" }, [
+              _vm._m(0),
               _vm._v(" "),
-              _c("pagination", {
-                attrs: { data: _vm.clients },
-                on: { "pagination-change-page": _vm.getClients }
-              })
-            ],
-            1
-          )
+              _c(
+                "tbody",
+                _vm._l(_vm.clients, function(client) {
+                  return _c("tr", [
+                    _c("td", [_vm._v(_vm._s(client.name))]),
+                    _vm._v(" "),
+                    _c("td", [_vm._v(_vm._s(client.country_name))]),
+                    _vm._v(" "),
+                    _c("td", [
+                      _vm._v(_vm._s(client.phone_state ? "OK" : "NOK"))
+                    ]),
+                    _vm._v(" "),
+                    _c("td", [_vm._v("+" + _vm._s(client.country_code))]),
+                    _vm._v(" "),
+                    _c("td", [_vm._v(_vm._s(client.phone_number))])
+                  ])
+                }),
+                0
+              )
+            ])
+          ])
         ])
       ])
     ])

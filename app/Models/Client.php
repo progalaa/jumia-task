@@ -9,6 +9,11 @@ class Client extends Model
 {
     use HasFactory;
 
+    protected $table = 'customer';
+    protected $fillable = ['name', 'phone'];
+
+    protected $appends = ['phone_number', 'country_code', 'country_name', 'phone_state'];
+
     const MOZAMBIQUE_CODE = 258;
     const CAMEROON_CODE = 237;
     const MOROCCO_CODE = 212;
@@ -31,11 +36,7 @@ class Client extends Model
         self::ETHIOPIA_CODE => '/\(251\)\ ?[1-59]\d{8}$/',
     ];
 
-    protected $fillable = ['name', 'phone'];
-
-   protected $appends = ['phone_number', 'country_code', 'country', 'country_code_with_plus', 'phone_state'];
-
-    public function getCountryAttribute()
+    public function getCountryNameAttribute(): string
     {
         return $this->countries[$this->country_code];
     }
@@ -52,12 +53,7 @@ class Client extends Model
         return (isset($match[1])) ? $match[1] : null;
     }
 
-    public function getCountryCodeWithPlusAttribute()
-    {
-        return '+' . $this->country_code;
-    }
-
-    public function getPhoneStateAttribute()
+    public function getPhoneStateAttribute(): bool
     {
         return (bool)preg_match($this->countriesRegex[$this->country_code], $this->phone);
     }
