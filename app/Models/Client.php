@@ -9,8 +9,9 @@ class Client extends Model
 {
     use HasFactory;
 
-    protected $table = 'customer';
+    protected $table = 'clients';
     protected $fillable = ['name', 'phone'];
+    public $timestamps = false;
 
     protected $appends = ['phone_number', 'country_code', 'country_name', 'phone_state'];
 

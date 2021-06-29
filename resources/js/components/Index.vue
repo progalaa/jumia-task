@@ -8,8 +8,8 @@
                     <div class="card-header">
                         <div class="row">
                             <div class="col-md-3">
-                                <select @change="getClients" v-model="country" class="custom-select">
-                                    <option disabled value="">Select country</option>
+                                <select @change="getClients" v-model="country" class="form-control">
+                                    <option disabled value="" selected="selected">Select country</option>
                                     <option value="Cameroon">Cameroon</option>
                                     <option value="Ethiopia">Ethiopia</option>
                                     <option value="Morocco">Morocco</option>
@@ -18,7 +18,7 @@
                                 </select>
                             </div>
                             <div class="col-md-3">
-                                <select @change="getClients" v-model="phoneState" class="custom-select">
+                                <select @change="getClients" v-model="phoneState" class="form-control">
                                     <option disabled value="">Filter by phone state</option>
                                     <option value="true">Valid</option>
                                     <option value="false">Not Valid</option>
@@ -39,7 +39,7 @@
                                 <th scope="col">Phone num</th>
                             </tr>
                             </thead>
-                            <tbody>
+                            <tbody v-if="!isLoading">
                             <tr v-for="client in clients">
                                 <td>{{ client.name }}</td>
                                 <td>{{ client.country_name }}</td>
@@ -48,8 +48,8 @@
                                 <td>{{ client.phone_number }}</td>
                             </tr>
                             </tbody>
+                            <div v-else>Loading...</div>
                         </table>
-<!--                        <pagination :data="clients" @pagination-change-page="getClients"></pagination>-->
                     </div>
                 </div>
             </div>
@@ -61,7 +61,7 @@
 export default {
     data() {
         return {
-            clients: [],
+            clients: {},
             filters: {},
             phoneState: null,
             country: null,
@@ -70,7 +70,7 @@ export default {
     },
 
     methods: {
-        async getClients() {
+        async getClients(page) {
             try {
                 if (this.phoneState) {
                     this.filters.PhoneState = this.phoneState
@@ -79,7 +79,8 @@ export default {
                     this.filters.Country = this.country
                 }
                 this.clients = (await axios.get(
-                    '/api/clients',{params: this.filters})).data.data;
+                    '/api/clients', {params: this.filters})).data.data;
+                this.isLoading = false;
             } catch (err) {
                 this.clients = null;
             }
@@ -90,3 +91,9 @@ export default {
     }
 }
 </script>
+
+<style scoped>
+.pagination{
+    margin-bottom: 0;
+}
+</style>
